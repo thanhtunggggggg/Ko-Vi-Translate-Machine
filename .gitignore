@@ -7,3 +7,5 @@
 .idea/misc.xml
 .idea/modules.xml
 .idea/vcs.xml
+src/__pycache__/translator.cpython-39.pyc
+utils/__pycache__/utils.cpython-39.pyc

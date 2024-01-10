@@ -1,29 +1,7 @@
-from transformers import M2M100Tokenizer, M2M100ForConditionalGeneration
-import torch
 import gradio as gr
 import time
-
-
-class TopikTranslator(object):
-    def __init__(self, ckpt, device='cuda'):
-        self.ckpt = ckpt
-        self.tokenizer = M2M100Tokenizer.from_pretrained("facebook/m2m100_418M", use_fast=False, src_lang="ko",
-                                                         tgt_lang="vi")
-        self.model = M2M100ForConditionalGeneration.from_pretrained(ckpt)
-        self.model = self.model.to(device)
-        self.model.eval()
-        self.device = device
-
-    def __call__(self, kr_text):
-        kr_text_enc = self.tokenizer(kr_text, return_tensors="pt")
-        kr_text_enc.to(self.device)
-
-        with torch.no_grad():
-            outputs = self.model.generate(**kr_text_enc)
-
-        # Decode the Vietnamese text
-        vn_text_dec = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
-        return vn_text_dec[0]
+from src.translator import TopikTranslator
+from utils.utils import split_into_sentences
 
 
 ckpt = './ckpts'
@@ -33,13 +11,18 @@ engine = TopikTranslator(ckpt=ckpt, device=device)
 
 def process(kr_input, history):
     try:
-        result = engine(kr_input)
-        result = result.split(' ')
+        sentences = split_into_sentences(kr_input)
         stream_result = ''
-        for text in result:
-            stream_result += text + ' '
-            time.sleep(0.05)
-            yield stream_result
+        for l, sen in enumerate(sentences):
+            result = engine(sen)
+            result = result.split(' ')
+            for r, text in enumerate(result):
+                if r != len(result)-1:
+                    stream_result += text + ' '
+                else:
+                    stream_result += '. '
+                time.sleep(0.05)
+                yield stream_result
     except:
         result = 'Something not valid, please check again'
     return result
