@@ -1,0 +1,9 @@
+# Custom
+\ckpts
+*.pt
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/Ko-Vi-Translate-Machine.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
