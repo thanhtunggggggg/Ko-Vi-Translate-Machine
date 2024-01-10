@@ -5,7 +5,7 @@ from utils.utils import split_into_sentences
 
 
 ckpt = './ckpts'
-device = 'cpu'
+device = 'cuda'
 engine = TopikTranslator(ckpt=ckpt, device=device)
 
 
@@ -17,7 +17,7 @@ def process(kr_input, history):
             result = engine(sen)
             result = result.split(' ')
             for r, text in enumerate(result):
-                if r != len(result)-1:
+                if r != len(result):
                     stream_result += text + ' '
                 else:
                     stream_result += '. '
